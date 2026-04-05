@@ -8,13 +8,31 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:background=""
+        android:background="@drawable/bg1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:gravity="center_horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="GENERATE YOUR NEW IDENTITY!"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="55dp"
+        android:textSize="35dp"
+        android:textStyle="bold"
+        android:textColor="@color/burgundy" />
+
+    <Button
+        android:layout_width="266dp"
+        android:layout_height="82dp"
+        android:backgroundTint="@color/greybrown"
+        android:text="Click here to know your identity"
+        tools:layout_editor_absoluteX="81dp"
+        tools:layout_editor_absoluteY="185dp"
+        android:textSize="25dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

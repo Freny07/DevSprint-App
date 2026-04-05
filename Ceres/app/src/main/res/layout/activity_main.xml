@@ -42,35 +42,108 @@
     </LinearLayout>
 
     <!-- Second Screen Content -->
-    <LinearLayout
+    <ScrollView
         android:id="@+id/secondScreen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="24dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:fillViewport="true">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Welcome to your new life."
-            android:textSize="32sp"
-            android:textStyle="italic"
-            android:textColor="@android:color/white"
+            android:orientation="vertical"
             android:gravity="center_horizontal"
-            android:layout_marginTop="40dp"
-            android:padding="10dp" />
+            android:padding="24dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Everything has changed..."
-            android:layout_marginTop="10dp"
-            android:textSize="18sp"
-            android:textColor="@android:color/white"
-            android:alpha="0.8" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome to your new life."
+                android:textSize="32sp"
+                android:textStyle="italic"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="20dp" />
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/ivAvatar"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="20dp"
+                android:background="#44FFFFFF"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Loading Name..."
+                android:textColor="@android:color/white"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvIdentityDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Location | Email"
+                android:textColor="@android:color/white"
+                android:alpha="0.8" />
+
+            <!-- Trivia Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="Trivia Challenge:"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTrivia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="#22FFFFFF"
+                android:padding="10dp"
+                android:text="Loading Question..."
+                android:textColor="@android:color/white" />
+
+            <!-- Pet Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="Your New Companion:"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/ivPet"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/tvKeepPet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Can you keep it?"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="italic" />
+
+            <ImageView
+                android:id="@+id/ivYesNo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="10dp" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

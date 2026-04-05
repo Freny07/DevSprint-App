@@ -28,11 +28,12 @@
         android:textColor="@color/burgundy" />
 
     <Button
-        android:layout_width="266dp"
-        android:layout_height="82dp"
+        android:layout_width="355dp"
+        android:layout_height="105dp"
         android:backgroundTint="@color/greybrown"
-        android:text="Click here to know your identity"
-        tools:layout_editor_absoluteX="81dp"
-        tools:layout_editor_absoluteY="185dp"
-        android:textSize="25dp"/>
+        android:padding="24dp"
+        android:text="Your New Identity Is Here !"
+        android:textSize="25dp"
+        tools:layout_editor_absoluteX="32dp"
+        tools:layout_editor_absoluteY="192dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

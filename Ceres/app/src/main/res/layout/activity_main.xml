@@ -31,9 +31,10 @@
         android:layout_width="355dp"
         android:layout_height="105dp"
         android:backgroundTint="@color/greybrown"
-        android:padding="24dp"
+        android:padding="25dp"
         android:text="Your New Identity Is Here !"
         android:textSize="25dp"
         tools:layout_editor_absoluteX="32dp"
         tools:layout_editor_absoluteY="192dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

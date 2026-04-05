@@ -1,11 +1,13 @@
 package com.example.ceres
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Html
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +16,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.google.android.material.button.MaterialButton
 import com.google.gson.annotations.SerializedName
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,7 +37,11 @@ data class UserName(val first: String, val last: String)
 data class UserLocation(val city: String, val country: String)
 
 data class TriviaResponse(val results: List<TriviaQuestion>)
-data class TriviaQuestion(val question: String, @SerializedName("correct_answer") val correctAnswer: String)
+data class TriviaQuestion(
+    val question: String,
+    @SerializedName("correct_answer") val correctAnswer: String,
+    @SerializedName("incorrect_answers") val incorrectAnswers: List<String>
+)
 
 data class DogResponse(val message: String)
 data class YesNoResponse(val image: String, val answer: String)
@@ -64,17 +75,8 @@ class MainActivity : AppCompatActivity() {
         val secondScreen = findViewById<ScrollView>(R.id.secondScreen)
         val btnGenerate = findViewById<Button>(R.id.btnGenerate)
 
-        // UI Elements for data
-        val ivAvatar = findViewById<ImageView>(R.id.ivAvatar)
-        val tvName = findViewById<TextView>(R.id.tvName)
-        val tvIdentityDetails = findViewById<TextView>(R.id.tvIdentityDetails)
-        val tvTrivia = findViewById<TextView>(R.id.tvTrivia)
-        val ivPet = findViewById<ImageView>(R.id.ivPet)
-        val tvKeepPet = findViewById<TextView>(R.id.tvKeepPet)
-        val ivYesNo = findViewById<ImageView>(R.id.ivYesNo)
-
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://unused.com/") // Base URL is required but overridden in @GET
+            .baseUrl("https://unused.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         apiService = retrofit.create(ApiService::class.java)
@@ -85,53 +87,115 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        // Pre-fetch
+        loadIdentity()
+        loadTrivia()
+        loadPetData()
+
         btnGenerate.setOnClickListener {
             mainLayout.setBackgroundResource(R.drawable.bg2)
             firstScreen.visibility = View.GONE
             secondScreen.visibility = View.VISIBLE
-            
-            loadIdentity(tvName, tvIdentityDetails, ivAvatar)
-            loadTrivia(tvTrivia)
-            loadPet(ivPet)
-            loadKeepDecision(tvKeepPet, ivYesNo)
+            findViewById<LinearLayout>(R.id.petSection).visibility = View.GONE
         }
     }
 
-    private fun loadIdentity(tvName: TextView, tvDetails: TextView, ivAvatar: ImageView) {
+    private fun loadIdentity() {
+        val ivAvatar = findViewById<ImageView>(R.id.ivAvatar)
+        val pbAvatar = findViewById<ProgressBar>(R.id.pbAvatar)
+        val tvName = findViewById<TextView>(R.id.tvName)
+        val pbName = findViewById<ProgressBar>(R.id.pbName)
+        val tvDetails = findViewById<TextView>(R.id.tvIdentityDetails)
+
         apiService.getRandomUser().enqueue(object : Callback<RandomUserResponse> {
             override fun onResponse(call: Call<RandomUserResponse>, response: Response<RandomUserResponse>) {
                 val user = response.body()?.results?.firstOrNull()
                 user?.let {
                     val fullName = "${it.name.first} ${it.name.last}"
-                    tvName.text = fullName
-                    tvDetails.text = "${it.location.city}, ${it.location.country} | ${it.email}"
                     
-                    // RoboHash Avatar using the name as seed
+                    // Hide name loader and show text
+                    pbName.visibility = View.GONE
+                    tvName.text = fullName
+                    tvDetails.text = "${it.location.city}, ${it.location.country}\n${it.email}"
+                    
                     val avatarUrl = "https://robohash.org/$fullName"
-                    Glide.with(this@MainActivity).load(avatarUrl).into(ivAvatar)
+                    
+                    // Use Glide listener to hide avatar loader
+                    Glide.with(this@MainActivity)
+                        .load(avatarUrl)
+                        .listener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                                pbAvatar.visibility = View.GONE
+                                return false
+                            }
+                            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                                pbAvatar.visibility = View.GONE
+                                return false
+                            }
+                        })
+                        .into(ivAvatar)
                 }
             }
             override fun onFailure(call: Call<RandomUserResponse>, t: Throwable) {
-                tvName.text = "Error loading identity"
+                pbName.visibility = View.GONE
+                pbAvatar.visibility = View.GONE
+                tvName.text = "Error"
             }
         })
     }
 
-    private fun loadTrivia(tvTrivia: TextView) {
+    private fun loadTrivia() {
+        val tvTrivia = findViewById<TextView>(R.id.tvTrivia)
+        val optionsContainer = findViewById<LinearLayout>(R.id.triviaOptionsContainer)
+        optionsContainer.removeAllViews()
+
         apiService.getTrivia().enqueue(object : Callback<TriviaResponse> {
             override fun onResponse(call: Call<TriviaResponse>, response: Response<TriviaResponse>) {
                 val trivia = response.body()?.results?.firstOrNull()
-                trivia?.let {
-                    tvTrivia.text = Html.fromHtml(it.question, Html.FROM_HTML_MODE_LEGACY)
+                trivia?.let { q ->
+                    tvTrivia.text = Html.fromHtml(q.question, Html.FROM_HTML_MODE_LEGACY)
+                    val allAnswers = (q.incorrectAnswers + q.correctAnswer).shuffled()
+                    
+                    allAnswers.forEach { answer ->
+                        val btn = MaterialButton(this@MainActivity)
+                        val params = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        params.setMargins(0, 8, 0, 8)
+                        btn.layoutParams = params
+                        btn.text = Html.fromHtml(answer, Html.FROM_HTML_MODE_LEGACY)
+                        btn.isAllCaps = false
+                        btn.setBackgroundColor(getColor(android.R.color.white))
+                        btn.setTextColor(getColor(android.R.color.black))
+                        btn.alpha = 0.85f
+                        
+                        btn.setOnClickListener {
+                            if (answer == q.correctAnswer) {
+                                btn.setBackgroundColor(getColor(android.R.color.holo_green_light))
+                            } else {
+                                btn.setBackgroundColor(getColor(android.R.color.holo_red_light))
+                            }
+                            for (i in 0 until optionsContainer.childCount) {
+                                optionsContainer.getChildAt(i).isEnabled = false
+                            }
+                            findViewById<LinearLayout>(R.id.petSection).visibility = View.VISIBLE
+                            val secondScreen = findViewById<ScrollView>(R.id.secondScreen)
+                            secondScreen.post { secondScreen.fullScroll(View.FOCUS_DOWN) }
+                        }
+                        optionsContainer.addView(btn)
+                    }
                 }
             }
-            override fun onFailure(call: Call<TriviaResponse>, t: Throwable) {
-                tvTrivia.text = "Error loading trivia"
-            }
+            override fun onFailure(call: Call<TriviaResponse>, t: Throwable) {}
         })
     }
 
-    private fun loadPet(ivPet: ImageView) {
+    private fun loadPetData() {
+        val ivPet = findViewById<ImageView>(R.id.ivPet)
+        val tvKeep = findViewById<TextView>(R.id.tvKeepPet)
+        val ivYesNo = findViewById<ImageView>(R.id.ivYesNo)
+
         apiService.getRandomDog().enqueue(object : Callback<DogResponse> {
             override fun onResponse(call: Call<DogResponse>, response: Response<DogResponse>) {
                 response.body()?.message?.let {
@@ -140,15 +204,12 @@ class MainActivity : AppCompatActivity() {
             }
             override fun onFailure(call: Call<DogResponse>, t: Throwable) {}
         })
-    }
 
-    private fun loadKeepDecision(tvKeep: TextView, ivDecision: ImageView) {
         apiService.getYesNo().enqueue(object : Callback<YesNoResponse> {
             override fun onResponse(call: Call<YesNoResponse>, response: Response<YesNoResponse>) {
-                val res = response.body()
-                res?.let {
+                response.body()?.let {
                     tvKeep.text = "Can you keep this pet? ${it.answer.uppercase()}"
-                    Glide.with(this@MainActivity).load(it.image).into(ivDecision)
+                    Glide.with(this@MainActivity).load(it.image).into(ivYesNo)
                 }
             }
             override fun onFailure(call: Call<YesNoResponse>, t: Throwable) {}

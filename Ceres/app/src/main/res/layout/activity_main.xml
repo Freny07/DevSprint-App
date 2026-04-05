@@ -5,36 +5,72 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg1"
     tools:context=".MainActivity">
 
-    <TextView
-        android:background="@drawable/bg1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
+    <!-- First Screen Content -->
+    <LinearLayout
+        android:id="@+id/firstScreen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="GENERATE YOUR NEW IDENTITY!"
+        android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:layout_marginTop="55dp"
-        android:textSize="35dp"
-        android:textStyle="bold"
-        android:textColor="@color/burgundy" />
+        android:padding="16dp"
+        android:visibility="visible">
 
-    <Button
-        android:layout_width="355dp"
-        android:layout_height="105dp"
-        android:backgroundTint="@color/greybrown"
-        android:padding="25dp"
-        android:text="Your New Identity Is Here !"
-        android:textSize="25dp"
-        tools:layout_editor_absoluteX="32dp"
-        tools:layout_editor_absoluteY="192dp" />
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GENERATE YOUR NEW IDENTITY!"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="55dp"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            android:textColor="@color/burgundy" />
+
+        <Button
+            android:id="@+id/btnGenerate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:backgroundTint="@color/greybrown"
+            android:padding="20dp"
+            android:text="Your New Identity Is Here !"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <!-- Second Screen Content -->
+    <LinearLayout
+        android:id="@+id/secondScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome to your new life."
+            android:textSize="32sp"
+            android:textStyle="italic"
+            android:textColor="@android:color/white"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:padding="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Everything has changed..."
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:alpha="0.8" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
